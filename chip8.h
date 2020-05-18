@@ -1,27 +1,37 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 
+#include <time.h>
+#include <errno.h>
+
+// bitmap.c
 #define width 64
 #define height 32
 
 #define scale 16
 
-#define VLEN 16
-
 void initGUI();
-bool setPixel();
+bool setPixel(int x, int y);
 void setPixels();
 void updateDisplay();
-// void initDebug();
-// void debug();
+void displayClear();
 
+unsigned char gfx[width * height];
 SDL_Window *window;
 SDL_Renderer *renderer;
 
-// CPU stuffs
+// cpu.c
+#define VLEN 16
+
+#define MEMLEN 4096
+
+void initCPU();
+void msleep(long msec);
+void cycle();
+
 unsigned char memory[4096];
 
 unsigned char V[VLEN];
@@ -37,4 +47,9 @@ unsigned int delay_timer;
 unsigned int sound_timer;
 
 bool drawFlag;
-bool gfx[width * height];
+
+// key.c
+void setKeyT(int index);
+void setKeyF(int index);
+
+bool keys[16];
