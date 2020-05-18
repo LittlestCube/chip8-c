@@ -1,5 +1,5 @@
 all:
-	gcc chip8.c bitmap.c -o chip8 -I/usr/local/include/SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE -L/usr/local/lib -lSDL2main -lSDL2 -Wl,-framework,Cocoa
+	gcc chip8.c bitmap.c -o chip8 -D_THREAD_SAFE -I/usr/local/include/SDL2 -L/usr/local/lib -lSDL2 -D_THREAD_SAFE -lSDL2_ttf -lSDL2
 	chmod +x chip8
 
 run:
