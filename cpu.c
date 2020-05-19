@@ -159,7 +159,7 @@ void cycle()
 		{
 			switch (opcode & 0x000F)
 			{
-				case 0x0000:			// 0x8XY0: sets VX to the value of VY
+				case 0x0000:	// 0x8XY0: sets VX to the value of VY
 				{
 					V[VXaddr] = V[VYaddr];
 					
@@ -167,7 +167,7 @@ void cycle()
 					break;
 				}
 				
-				case 0x0001:			// 0x8XY0: sets VX to VX | VY
+				case 0x0001:	// 0x8XY0: sets VX to VX | VY
 				{
 					V[VXaddr] |= V[VYaddr];
 					
@@ -175,7 +175,7 @@ void cycle()
 					break;
 				}
 				
-				case 0x0002:			// 0x8XY2: sets VX to VX & VY
+				case 0x0002:	// 0x8XY2: sets VX to VX & VY
 				{
 					V[VXaddr] &= V[VYaddr];
 					
@@ -183,7 +183,7 @@ void cycle()
 					break;
 				}
 				
-				case 0x0003:			// 0x8XY3: sets VX to VX ^ VY
+				case 0x0003:	// 0x8XY3: sets VX to VX ^ VY
 				{
 					V[VXaddr] ^= V[VYaddr];
 					
@@ -191,7 +191,7 @@ void cycle()
 					break;
 				}
 				
-				case 0x0004:			// 0x8XY4: adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't
+				case 0x0004:	// 0x8XY4: adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't
 				{
 					if (V[VXaddr] + V[VYaddr] > 255)
 					{
@@ -209,7 +209,7 @@ void cycle()
 					break;
 				}
 				
-				case 0x0005:			// 0x8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't
+				case 0x0005:	// 0x8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't
 				{
 					if (V[VYaddr] > V[VXaddr])
 					{
@@ -227,7 +227,7 @@ void cycle()
 					break;
 				}
 				
-				case 0x0006:			// 0x8X?6: stores the least significant bit of VX in VF and then shifts VX to the right by 1
+				case 0x0006:	// 0x8X?6: stores the least significant bit of VX in VF and then shifts VX to the right by 1
 				{
 					V[0xF] = V[VXaddr] & 0x01;
 					
@@ -237,7 +237,7 @@ void cycle()
 					break;
 				}
 				
-				case 0x0007:			// 0x8XY7: sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't
+				case 0x0007:	// 0x8XY7: sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't
 				{
 					if (V[VXaddr] > V[VYaddr])
 					{
@@ -255,7 +255,7 @@ void cycle()
 					break;
 				}
 				
-				case 0x0008:			// 0x8X?8: stores the most significant bit of VX in VF and then shifts VX to the left by 1
+				case 0x000E:	// 0x8X?E: stores the most significant bit of VX in VF and then shifts VX to the left by 1
 				{
 					V[0xF] = (V[VXaddr] & 0x80) >> 7;
 					
@@ -265,6 +265,43 @@ void cycle()
 					break;
 				}
 			}
+			break;
+		}
+		
+		case 0x9000:			// 0x9XY0: skips the next instruction if VX doesn't equal VY
+		{
+			if (V[VXaddr] != V[VYaddr])
+			{
+				nextOp();
+			}
+			
+			nextOp();
+			break;
+		}
+		
+		case 0xA000:			// 0xANNN: sets I to the address NNN
+		{
+			I = NNN;
+			
+			nextOp();
+			break;
+		}
+		
+		case 0xB000:			// 0xBNNN: jumps to the address NNN plus V0
+		{
+			pc = NNN + V[0x0];
+			break;
+		}
+		
+		case 0xC000:			// 0xCNNN: sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN
+		{
+			int rand_num = rand() % 256;
+			
+			printf("%d", rand_num);
+			
+			V[VXaddr] = rand_num & NN;
+			
+			nextOp();
 			break;
 		}
 	}
