@@ -54,9 +54,14 @@ void cycle()
 	
 	else
 	{
-		printf("pc out of bounds, closing...");
+		printf("\npc 0x%X out of bounds, closing...", pc);
 		exit(1);
 	}
+	
+	unsigned char VXaddr = ((opcode & 0x0F00) >> 8);
+	unsigned char VYaddr = ((opcode & 0x00F0) >> 4);
+	unsigned char NN = (opcode & 0x00FF);
+	unsigned short NNN = (opcode & 0x0FFF);
 	
 	printf("opcode: 0x%X\t\tpc: 0x%X\n", opcode, pc);
 	
@@ -71,8 +76,196 @@ void cycle()
 					displayClear();
 					
 					nextOp();
+					break;
+				}
+				
+				case 0x00EE:	// 0x00EE: returns from a subroutine
+				{
+					--sp;
+					pc = stack[sp];
+					stack[sp] = 0;
+					
+					nextOp();
+					break;
 				}
 			}
+			break;
+		}
+		
+		case 0x1000:			// 0x1NNN: jumps to address NNN
+		{
+			pc = NNN;
+			break;
+		}
+		
+		case 0x2000:			// 0x2NNN: calls subroutine at NNN
+		{
+			stack[sp] = pc;
+			++sp;
+			pc = NNN;
+			break;
+		}
+		
+		case 0x3000:			// 0x3XNN: skips the next instruction if VX equals NN
+		{
+			if (V[VXaddr] == NN)
+			{
+				nextOp();
+			}
+			
+			nextOp();
+			break;
+		}
+		
+		case 0x4000:			// 0x4000: skips the next instruction if VX doesn't equal NN
+		{
+			if (V[VXaddr] != NN)
+			{
+				nextOp();
+			}
+			
+			nextOp();
+			break;
+		}
+		
+		case 0x5000:			// 0x5XY0: skips the next instruction if VX equals VY
+		{
+			if (V[VXaddr] == V[VYaddr])
+			{
+				nextOp();
+			}
+			
+			nextOp();
+			break;
+		}
+		
+		case 0x6000:			// 0x6XNN: sets VX to NN
+		{
+			V[VXaddr] = NN;
+			
+			nextOp();
+			break;
+		}
+		
+		case 0x7000:			// 0x7XNN: adds NN to VX
+		{
+			V[VXaddr] += NN;
+			
+			nextOp();
+			break;
+		}
+		
+		case 0x8000:
+		{
+			switch (opcode & 0x000F)
+			{
+				case 0x0000:			// 0x8XY0: sets VX to the value of VY
+				{
+					V[VXaddr] = V[VYaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0001:			// 0x8XY0: sets VX to VX | VY
+				{
+					V[VXaddr] |= V[VYaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0002:			// 0x8XY2: sets VX to VX & VY
+				{
+					V[VXaddr] &= V[VYaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0003:			// 0x8XY3: sets VX to VX ^ VY
+				{
+					V[VXaddr] ^= V[VYaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0004:			// 0x8XY4: adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't
+				{
+					if (V[VXaddr] + V[VYaddr] > 255)
+					{
+						V[0xF] = 1;
+					}
+					
+					else
+					{
+						V[0xF] = 0;
+					}
+					
+					V[VXaddr] += V[VYaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0005:			// 0x8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't
+				{
+					if (V[VYaddr] > V[VXaddr])
+					{
+						V[0xF] = 0;
+					}
+					
+					else
+					{
+						V[0xF] = 1;
+					}
+					
+					V[VXaddr] -= V[VYaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0006:			// 0x8X?6: stores the least significant bit of VX in VF and then shifts VX to the right by 1
+				{
+					V[0xF] = V[VXaddr] & 0x01;
+					
+					V[VXaddr] >>= 1;
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0007:			// 0x8XY7: sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't
+				{
+					if (V[VXaddr] > V[VYaddr])
+					{
+						V[0xF] = 0;
+					}
+					
+					else
+					{
+						V[0xF] = 1;
+					}
+					
+					V[VXaddr] = V[VYaddr] - V[VXaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0008:			// 0x8X?8: stores the most significant bit of VX in VF and then shifts VX to the left by 1
+				{
+					V[0xF] = (V[VXaddr] & 0x80) >> 7;
+					
+					V[VXaddr] <<= 1;
+					
+					nextOp();
+					break;
+				}
+			}
+			break;
 		}
 	}
 }

@@ -7,13 +7,23 @@ int main(int argc, char *argv[])
 	SDL_Event e;
 	bool quit = false;
 	
-	setPixel(31, 15);
-	setPixel(0, 0);
-	setPixel(63, 31);
-	setPixels();
+	memory[0x200	] = 0x50;
+	memory[0x200 + 1] = 0x10;
 	
-	memory[pc] = 0x00;
-	memory[pc + 1] = 0xE0;
+	memory[0x200 + 2] = 0x12;
+	memory[0x200 + 3] = 0x06;
+	
+	memory[0x200 + 4] = 0x61;
+	memory[0x200 + 5] = 0xFD;
+	
+	memory[0x200 + 6] = 0x60;
+	memory[0x200 + 7] = 0x25;
+	
+	memory[0x200 + 8] = 0x00;
+	memory[0x200 + 9] = 0xE0;
+	
+	memory[0x200 + 10] = 0x80;
+	memory[0x200 + 11] = 0x08;
 	
 	while (!quit)
 	{
@@ -251,9 +261,12 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		msleep(166);	// run at 60Hz (apporoximately)
+		msleep(16);	// run at 60Hz (apporoximately)
 		
 		cycle();
+		
+		printf("V0: 0x%X\n", V[0]);
+		printf("VF: 0x%X\n", V[0xF]);
 		
 		if (drawFlag)
 		{

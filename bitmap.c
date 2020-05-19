@@ -24,9 +24,9 @@ bool setPixel(int x, int y)
 		return true;
 	}
 	
-	gfx[location] ^= 255;
+	gfx[location] ^= 255;					// toggles gfx[location] from 0 to 255 and vice versa
 	
-	return gfx[location];			// returns true if no collision
+	return gfx[location] == 255;			// returns true if no collision
 }
 
 void setPixels()
