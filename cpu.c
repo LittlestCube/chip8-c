@@ -322,7 +322,6 @@ void cycle()
 				}
 			}
 			
-			setPixels();
 			drawFlag = true;
 			
 			nextOp();

@@ -20,7 +20,7 @@ bool setPixel(int x, int y)
 	int location = x + (width * y);
 	if (location > 2047 || location < 0)
 	{
-		printf("bad location: program tried to draw at location %d, %d", x, y);
+		printf("bad location: program tried to draw at location %d, %d\n", x, y);
 		return true;
 	}
 	
@@ -50,7 +50,24 @@ void setPixels()
 			}
 		}
 	}
+	
+	updateDisplay();
 }
+
+void debugRender()
+	{
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				if (gfx[(y * width) + x]) 
+					printf("O");
+				else 
+					printf(" ");
+			}
+			printf("\n");
+		}
+	}
 
 void initGUI()
 {

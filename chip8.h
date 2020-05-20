@@ -11,13 +11,14 @@
 #define width 64
 #define height 32
 
-#define scale 9
+#define scale 3
 
 void initGUI();
 bool setPixel(int x, int y);
 void setPixels();
 void updateDisplay();
 void displayClear();
+void debugRender();
 
 unsigned char gfx[width * height];
 SDL_Window *window;
@@ -51,5 +52,6 @@ bool drawFlag;
 // key.c
 void setKeyT(int index);
 void setKeyF(int index);
+void checkKeys(SDL_Event e);
 
 bool keys[16];
