@@ -11,6 +11,27 @@ void debug()
 	printf("\n");
 }
 
+void loadGame(char *file)
+{
+	FILE *fileptr;
+	char *ROM;
+	long filelen;
+	
+	fileptr = fopen(file, "rb");
+	fseek(fileptr, 0, SEEK_END);
+	filelen = ftell(fileptr);
+	rewind(fileptr);
+	
+	ROM = (char *) malloc(filelen * sizeof(char));
+	fread(ROM, filelen, 1, fileptr);
+	fclose(fileptr);
+	
+	for (int i = 0; i < filelen; i++)
+	{
+		memory[0x200 + i] = ROM[i];
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	initGUI();
@@ -18,23 +39,34 @@ int main(int argc, char *argv[])
 	SDL_Event e;
 	bool quit = false;
 	
-	memory[0x200	] = 0x00;
-	memory[0x200 + 1] = 0xE0;
+	if (argc > 1)
+	{
+		loadGame(argv[1]);
+	}
 	
-	memory[0x200 + 2] = 0x60;
-	memory[0x200 + 3] = 0x10;
+	else
+	{
+		printf("E: no game loaded! closing...");
+		exit(1);
+	}
 	
-	memory[0x200 + 4] = 0x90;
-	memory[0x200 + 5] = 0x10;
+	/*memory[0x200	] = 0x12;
+	memory[0x200 + 1] = 0x04;
+	
+	memory[0x200 + 2] = 0x00;
+	memory[0x200 + 3] = 0xFF;
+	
+	memory[0x200 + 4] = 0xA2;
+	memory[0x200 + 5] = 0x03;
 	
 	memory[0x200 + 6] = 0x60;
-	memory[0x200 + 7] = 0x25;
+	memory[0x200 + 7] = 0x15;
 	
-	memory[0x200 + 8] = 0x00;
-	memory[0x200 + 9] = 0xE0;
+	memory[0x200 + 8] = 0x61;
+	memory[0x200 + 9] = 0x15;
 	
-	memory[0x200 + 10] = 0xC0;
-	memory[0x200 + 11] = 0x55;
+	memory[0x200 + 10] = 0xD0;
+	memory[0x200 + 11] = 0x11;*/
 	
 	while (!quit)
 	{
@@ -154,6 +186,7 @@ int main(int argc, char *argv[])
 							break;
 						}
 					}
+					break;
 				}
 				
 				// look for a key release
@@ -263,6 +296,7 @@ int main(int argc, char *argv[])
 							break;
 						}
 					}
+					break;
 				}
 				
 				default:
@@ -272,7 +306,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		msleep(16);	// run at 60Hz (apporoximately)
+		msleep(0);	// run at 60Hz (apporoximately)
 		
 		cycle();
 		

@@ -60,6 +60,7 @@ void cycle()
 	
 	unsigned char VXaddr = ((opcode & 0x0F00) >> 8);
 	unsigned char VYaddr = ((opcode & 0x00F0) >> 4);
+	unsigned char N = (opcode & 0x000F);
 	unsigned char NN = (opcode & 0x00FF);
 	unsigned short NNN = (opcode & 0x0FFF);
 	
@@ -304,5 +305,186 @@ void cycle()
 			nextOp();
 			break;
 		}
+		
+		case 0xD000:			// 0xDXYN: draws a sprite from memory[I] at (VX, VY) that has a width of 8 pixels and a height of N pixels. VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
+		{
+			V[0xF] = 0;
+			
+			for (int currLine = 0; currLine < N; currLine++)
+			{
+				for (int currPixel = 0; currPixel < 8; currPixel++)
+				{
+					if ((memory[I + currLine] & (0x80 >> currPixel)) != 0)
+					{
+						bool collision = setPixel(V[VXaddr] + currPixel, V[VYaddr] + currLine);		// remember, this returns true if no collision
+						
+						if (!collision)
+						{
+							V[0xF] = 1;
+						}
+					}
+				}
+			}
+			
+			setPixels();
+			drawFlag = true;
+			
+			nextOp();
+			break;
+		}
+		
+		case 0xE000:
+		{
+			switch (opcode & 0x00FF)
+			{
+				case 0x009E:	// 0xEX9E: skips the next instruction if the key stored in VX is pressed
+				{
+					if (keys[V[VXaddr]])
+					{
+						nextOp();
+					}
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x00A1:	// 0xEXA1: skips the next instruction if the key stored in VX isn't pressed
+				{
+					if (!keys[V[VXaddr]])
+					{
+						nextOp();
+					}
+					
+					nextOp();
+					break;
+				}
+			}
+			break;
+		}
+		
+		case 0xF000:
+		{
+			switch (opcode & 0x00FF)
+			{
+				case 0x0007:	// 0xFX07: sets VX to the value of the delay timer
+				{
+					V[VXaddr] = delay_timer;
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x000A:	// 0xFX0A: a key press is awaited, and then stored in VX
+				{
+					for (int i = 0; i < VLEN; i++)
+					{
+						if (keys[i])
+						{
+							V[VXaddr] = i;
+							
+							nextOp();
+						}
+					}
+					
+					break;
+				}
+				
+				case 0x0015:	// 0xFX15: sets the delay timer to VX
+				{
+					delay_timer = V[VXaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0018:	// 0xFX18: sets the sound timer to VX
+				{
+					sound_timer = V[VXaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x001E:	// 0xFX1E: adds VX to I. VF is set to 1 when there is a range overflow (I+VX>0xFFF), and to 0 when there isn't
+				{
+					if ((I + V[VXaddr]) > 0x0FFF)
+					{
+						V[0xF] = 1;
+					}
+					
+					else
+					{
+						V[0xF] = 0;
+					}
+					
+					I += V[VXaddr];
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0029:	// 0xFX29: sets I to the location of the sprite for the character in VX
+				{
+					I = V[VXaddr] * 0x5;
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0033:	// 0xFX33: stores the binary-coded decimal representation of VX in memory[I]
+				{
+					char l_digit = (char) ((V[VXaddr] - (V[VXaddr] % 100)) / 100);
+					char m_digit = (char) ((V[VXaddr] - l_digit - (V[VXaddr] % 10)) / 10);
+					char r_digit = (char) (V[VXaddr] - l_digit - m_digit);
+					
+					printf("%d %d %d", l_digit, m_digit, r_digit);
+					
+					memory[I] = l_digit;
+					memory[I + 1] = m_digit;
+					memory[I + 2] = r_digit;
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0055:	// 0xFX55: stores V0 to VX (including VX) in memory starting at address I. I itself is left unmodified
+				{
+					for (int i = 0; i <= VXaddr; i++)
+					{
+						memory[I + i] = V[i];
+					}
+					
+					nextOp();
+					break;
+				}
+				
+				case 0x0065:	// 0xFX65: fills V0 to VX (including VX) with values from memory starting at address I. I itself is left unmodified
+				{
+					for (int i = 0; i <= VXaddr; i++)
+					{
+						V[i] = memory[I + i];
+					}
+					
+					nextOp();
+					break;
+				}
+			}
+			break;
+		}
+	}
+	
+	if (delay_timer > 0)
+	{
+		delay_timer--;
+	}
+	
+	if (sound_timer > 0)
+	{
+		if (sound_timer == 1)
+		{
+			printf("BEEP!");
+		}
+		
+		sound_timer--;
 	}
 }

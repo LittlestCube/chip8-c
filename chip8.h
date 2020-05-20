@@ -24,7 +24,7 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 // cpu.c
-#define VLEN 16
+#define VLEN 16			// 16 is also the length of the keys
 
 #define MEMLEN 4096
 

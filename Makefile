@@ -1,9 +1,9 @@
 all:
-	gcc *.c -o chip8 -D_THREAD_SAFE -I/usr/local/include/SDL2 -L/usr/local/lib -lSDL2
+	gcc *.c -o chip8 $(shell sdl2-config --cflags --libs)
 	chmod +x chip8
 
 run:
-	./chip8
+	./chip8 brix.ch8
 
 clean:
 	rm chip8 || continue

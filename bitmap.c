@@ -50,8 +50,6 @@ void setPixels()
 			}
 		}
 	}
-	
-	drawFlag = true;
 }
 
 void initGUI()
