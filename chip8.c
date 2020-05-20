@@ -50,24 +50,6 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 	
-	/*memory[0x200	] = 0x12;
-	memory[0x200 + 1] = 0x04;
-	
-	memory[0x200 + 2] = 0x00;
-	memory[0x200 + 3] = 0xFF;
-	
-	memory[0x200 + 4] = 0xA2;
-	memory[0x200 + 5] = 0x03;
-	
-	memory[0x200 + 6] = 0x60;
-	memory[0x200 + 7] = 0x15;
-	
-	memory[0x200 + 8] = 0x61;
-	memory[0x200 + 9] = 0x15;
-	
-	memory[0x200 + 10] = 0xD0;
-	memory[0x200 + 11] = 0x11;*/
-	
 	while (!quit)
 	{
 		while (SDL_PollEvent(&e))
@@ -306,11 +288,9 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		msleep(0);	// run at 60Hz (apporoximately)
-		
 		cycle();
 		
-		debug();
+		//debug();
 		
 		if (drawFlag)
 		{

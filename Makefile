@@ -3,7 +3,7 @@ all:
 	chmod +x chip8
 
 run:
-	./chip8 brix.ch8
+	./chip8 tetris.ch8
 
 clean:
 	rm chip8 || continue

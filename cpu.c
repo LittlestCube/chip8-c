@@ -433,9 +433,9 @@ void cycle()
 				
 				case 0x0033:	// 0xFX33: stores the binary-coded decimal representation of VX in memory[I]
 				{
-					char l_digit = (char) ((V[VXaddr] - (V[VXaddr] % 100)) / 100);
-					char m_digit = (char) ((V[VXaddr] - l_digit - (V[VXaddr] % 10)) / 10);
-					char r_digit = (char) (V[VXaddr] - l_digit - m_digit);
+					unsigned char l_digit = V[VXaddr] / 100;
+					unsigned char m_digit = (V[VXaddr] / 10) % 10;
+					unsigned char r_digit = (V[VXaddr] % 100) % 10;
 					
 					printf("%d %d %d", l_digit, m_digit, r_digit);
 					
@@ -476,6 +476,7 @@ void cycle()
 	if (delay_timer > 0)
 	{
 		delay_timer--;
+		msleep(12);
 	}
 	
 	if (sound_timer > 0)
