@@ -321,10 +321,13 @@ void cycle()
 					}
 				}
 			}
-			
 			drawFlag = true;
 			
 			nextOp();
+			
+			msleep(3);
+			
+			setPixels();
 			break;
 		}
 		

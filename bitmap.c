@@ -50,8 +50,6 @@ void setPixels()
 			}
 		}
 	}
-	
-	updateDisplay();
 }
 
 void debugRender()

@@ -11,7 +11,7 @@
 #define width 64
 #define height 32
 
-#define scale 3
+#define scale 6
 
 void initGUI();
 bool setPixel(int x, int y);
