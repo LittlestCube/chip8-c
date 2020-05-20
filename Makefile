@@ -1,5 +1,5 @@
 all:
-	gcc *.c -o chip8 $(shell sdl2-config --cflags --libs) -O3
+	gcc *.c -o chip8 $(shell sdl2-config --cflags --libs)
 	chmod +x chip8
 
 run:
