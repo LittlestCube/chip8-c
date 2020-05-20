@@ -64,8 +64,6 @@ void cycle()
 	unsigned char NN = (opcode & 0x00FF);
 	unsigned short NNN = (opcode & 0x0FFF);
 	
-	printf("opcode: 0x%X\t\tpc: 0x%X\n", opcode, pc);
-	
 	switch (opcode & 0xF000)
 	{
 		case 0x0000:
@@ -298,8 +296,6 @@ void cycle()
 		{
 			int rand_num = rand() % 256;
 			
-			printf("%d", rand_num);
-			
 			V[VXaddr] = rand_num & NN;
 			
 			nextOp();
@@ -436,8 +432,6 @@ void cycle()
 					unsigned char l_digit = V[VXaddr] / 100;
 					unsigned char m_digit = (V[VXaddr] / 10) % 10;
 					unsigned char r_digit = (V[VXaddr] % 100) % 10;
-					
-					printf("%d %d %d", l_digit, m_digit, r_digit);
 					
 					memory[I] = l_digit;
 					memory[I + 1] = m_digit;
