@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
 {
 	initGUI();
 	initCPU();
+	initAudio();
 	SDL_Event e;
 	bool quit = false;
 	

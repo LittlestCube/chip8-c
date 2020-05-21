@@ -17,12 +17,7 @@ void displayClear()
 
 bool setPixel(int x, int y)
 {
-	int location = x + (width * y);
-	if (location > 2047 || location < 0)
-	{
-		printf("bad location: program tried to draw at location %d, %d\n", x, y);
-		return true;
-	}
+	int location = (x + (width * y)) % 2048;// wrap x and y
 	
 	gfx[location] ^= 255;					// toggles gfx[location] from 0 to 255 and vice versa
 	
@@ -69,7 +64,7 @@ void debugRender()
 
 void initGUI()
 {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	
 	window = SDL_CreateWindow("Chip 8", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width * scale, height * scale, 0);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);

@@ -11,7 +11,7 @@
 #define width 64
 #define height 32
 
-#define scale 6
+#define scale 10
 
 void initGUI();
 bool setPixel(int x, int y);
@@ -23,6 +23,9 @@ void debugRender();
 unsigned char gfx[width * height];
 SDL_Window *window;
 SDL_Renderer *renderer;
+
+// audio.c
+void initAudio();
 
 // cpu.c
 #define VLEN 16			// 16 is also the length of the keys
